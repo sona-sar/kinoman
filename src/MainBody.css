@@ -1,0 +1,19 @@
+.MainBody{
+    display:flex;
+    justify-content: center;
+    margin-top:60px;
+    gap:50px;
+
+}
+.play-portion{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap:30px;
+}
+.play-button{
+    position:absolute !important;
+    display: inline-block !important;
+    top:20px;
+}

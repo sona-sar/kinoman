@@ -1,0 +1,26 @@
+.header-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.the-name{
+    font-size:24px !important;
+    color:white;
+    font-weight: 600 !important;
+    font-family: lexend !important;
+    cursor: pointer;
+    z-index:1
+}
+.the-score, .high-score{
+    font-size:20px !important;
+    font-family: lexend !important;
+    cursor: pointer;
+    color:white;
+    z-index:1;
+    font-weight: 500 !important;
+}
+
+.score-section{
+    background-color: transparent !important;
+}
