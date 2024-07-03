@@ -20,84 +20,79 @@ const Div = styled('div')(({ theme }) => ({
 let count = 0;
 
 
-function MainBody() {
-  
+function MainBody({ score, setScore, points, setPoints }) {
+
   let generateRandomMovie = () => {
-    let num = Math.floor(Math.random()*300);
+    let num = Math.floor(Math.random() * 300);
     let movie = movies.popular_movies[num].movie_name;
     count++;
-    console.log(count, movie)
     return movie;
   };
-  let currentActors = "";
-  let chosenActor = "";
-  const [poster, setPoster] = useState("");
 
-  // const [chosenActor, setChosenActor] = useState("")
+  const [poster, setPoster] = useState("");
+  const [currentActors, setCurrentActors] = useState([]);
+  const [chosenActor, setChosenActor] = useState("");
   const apiKey = "493435e4"
 
-  function checkActor(currentActors, chosenActor){
-    if(currentActors.includes(chosenActor) && chosenActor){
-      return true;
+  function checkActor(currentActors, chosenActor) {
+    for (let i = 0; i < currentActors.length; i++) {
+      if (currentActors[i].toLowerCase() === chosenActor.toLowerCase()) {
+        return true;
+      }
     }
-    else{
-      return false;
-    }
+    return false;
   }
 
   const handleInputChange = (event) => {
-    chosenActor = event.target.value
+    setChosenActor(event.target.value);
   }
 
-  function fetchMovie(){
+  function fetchMovie() {
     const requestOptions = {
       method: "GET",
     };
-    if(!currentActors){
-
-    }
-    console.log(currentActors, chosenActor)
-
-    console.log(checkActor(currentActors, chosenActor))
 
     let randomMovie = generateRandomMovie();
-    
+
     fetch(`http://www.omdbapi.com/?t=${randomMovie}&apikey=${apiKey}`, requestOptions)
-    
       .then((response) => response.json())
       .then((result) => {
-
         setPoster(result?.Poster)
-        currentActors = result.Actors.split(' ');
-        console.log(currentActors)
-  
+        setCurrentActors(result?.Actors?.split(',').map(name => name.trim()));
       })
       .catch((error) => {
         console.error(error)
-    });
-
-
+      });
   }
 
-
-
-
-  if(!poster){
-    fetchMovie();
-
+  function handleEnterPress() {
+    if (checkActor(currentActors, chosenActor)) {
+      alert("Correct!");
+      setChosenActor("");
+      setScore(score + 1);
+      setPoints(points + 100);
+      fetchMovie();
+    }
+    else {
+      alert("Incorrect! Game Over!");
+      setPoster("");
+      setCurrentActors([]);
+      setChosenActor("");
+      setScore(0);
+      setPoints(0);
+    }
   }
-
   return (
     <div className='MainBody'>
-      <Button  variant="contained" className='play-button'>Play</Button>
+      <Button onClick={fetchMovie} variant="contained" className='play-button'>Play</Button>
       <Div className='poster-container'>
-        <img src = {poster} alt = ""></img>
+        <img src={poster} alt=""></img>
       </Div>
       <Div className='play-portion'>
         <Typography>Write down the actor's name below</Typography>
-        <TextField onChange = {handleInputChange}
-        id="movieSearch" label="enter the name" variant="outlined"  />
-        <Button onClick = {fetchMovie} variant="outlined">enter</Button>
+        <TextField value={chosenActor} onChange={handleInputChange}
+          id="movieSearch" label="enter the name" variant="outlined" />
+        <Button onClick={handleEnterPress} variant="outlined">enter</Button>
         <Button variant="contained">Skip</Button>
         <Button variant="outlined">Hint</Button>
 
