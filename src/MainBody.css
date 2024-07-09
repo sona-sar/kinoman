@@ -47,6 +47,24 @@ img{
     text-align: center;
     font-weight: 600 !important;
 }
+.win-text{
+    margin-top:20px !important;
+    font-family: lexend !important;
+    text-wrap:wrap !important;
+    font-size:20px !important;
+    text-align: center;
+    font-weight: 400 !important;
+    color:rgb(53, 53, 53);
+}
+
+.question{
+    font-family: lexend !important;
+    margin:0px 15px !important;
+    text-align: center;
+}
+.answer-buttons{
+    background-color: transparent !important;
+}
 
 .button{
     background-color: white !important;
@@ -100,4 +118,26 @@ img{
     text-align: start;
 
     font-family: lexend !important;
+}
+
+
+
+
+.question-component{
+    border-radius: 10px;
+    background: linear-gradient(142deg, rgb(119, 88, 246) 0%, rgb(109, 76, 241) 22%, rgb(109, 74, 249) 51%, rgb(111, 78, 245) 85%, rgb(134, 105, 247) 100%) !important; 
+    border:0.1px solid white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.category-button, .true-false{
+    border:none !important;
+    background-color: rgba(31, 33, 175, 0.458) !important;
+    color:white !important;
+    padding:10px 20px !important;
+    font-family: lexend !important;
+    margin:20px  10px !important;
 }
