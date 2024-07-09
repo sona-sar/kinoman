@@ -10,5 +10,6 @@ body{
     background: linear-gradient(142deg, rgba(112,80,239,1) 0%, rgba(98,63,238,1) 22%, rgba(84,46,232,1) 51%, rgba(98,63,238,1) 85%, rgba(123,92,246,1) 100%); 
   background-repeat: no-repeat;
   height: 100%;
+  padding-bottom:100px;
 }
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');

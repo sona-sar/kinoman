@@ -3,6 +3,8 @@ import { useState } from 'react';
 import "./Header.css"
 import Typography from "@mui/material/Typography";
 import { styled } from '@mui/material/styles';
+import Button from "@mui/material/Button";
+
 
 const Div = styled('div')(({ theme }) => ({
   ...theme.typography.button,
@@ -10,15 +12,15 @@ const Div = styled('div')(({ theme }) => ({
   padding: theme.spacing(1),
 }));
 
-function Header() {
-  const [score, setScore] = useState(0)
+function Header({score, points, showType}) {
+  
 
   return (
     <div className = "Header">
       <div className='header-container'>
         <Div className='score-section'>
-          <Typography className = "high-score">high score: {score} </Typography>
-          <Typography className = "the-score">points: {score} </Typography>
+          <Typography className = "high-score">score: {score} </Typography>
+          <Typography className = "the-score">points: {points} </Typography>
         </Div>
         <Typography className = "the-name">KINOMAN</Typography>
       </div>

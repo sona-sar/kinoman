@@ -24,3 +24,20 @@
 .score-section{
     background-color: transparent !important;
 }
+.type-container{
+    background-color: transparent !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:20px;
+}
+.choose-type{
+    background-color: white !important;
+    border:none !important;
+    padding:10px 20px !important;
+    border-radius:50px !important;
+}
+
+.choose-type label{
+    color:gray;
+}

@@ -3,7 +3,7 @@
     justify-content: center;
     margin-top:60px;
     gap:50px;
-
+    flex-wrap: wrap;
 }
 .play-portion{
     display: flex;
@@ -11,9 +11,93 @@
     align-items: center;
     justify-content: center;
     gap:30px;
+    color:white;
+
 }
 .play-button{
     position:absolute !important;
     display: inline-block !important;
     top:20px;
+}
+.play-portion, .poster-container{
+    border-radius: 20px;
+    padding:20px !important;
+    background: linear-gradient(142deg, rgb(119, 88, 246) 0%, rgb(109, 76, 241) 22%, rgb(109, 74, 249) 51%, rgb(111, 78, 245) 85%, rgb(134, 105, 247) 100%); 
+    border:0.2px solid white;
+    transition: 0.25s;
+}
+.poster-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+   
+}
+.play-portion:hover{
+    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.248);
+}
+img{
+    border-radius: 10px;
+}
+
+.text{
+    font-family: lexend !important;
+    text-wrap:wrap !important;
+    font-size:20px !important;
+    text-align: center;
+    font-weight: 600 !important;
+}
+
+.button{
+    background-color: white !important;
+    padding:10px 40px !important; 
+    border-radius: 50px !important;
+    color:rgb(68, 68, 68) !important;
+    border:none !important;
+    font-family:lexend !important;
+    transition:0.25s !important;
+    min-width: 160px !important;
+}
+.button:hover{
+    transform: scale(1.05);
+    filter:drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.584))
+    
+}
+
+.hint, .skip{
+    display: flex;
+    gap:5px;
+}
+.hint:hover{
+    color:rgb(255, 183, 0) !important;
+}
+.skip:hover{
+    color:rgb(255, 68, 0) !important;
+}
+.enter:hover{
+    color:rgb(34, 200, 222) !important;
+}
+.input .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+    border-color: rgb(188, 172, 240);
+    cursor: pointer !important;
+}
+.input .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: rgb(188, 172, 240);
+  }
+.input .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: rgb(188, 172, 240);
+}
+.input label{
+    font-family: lexend !important;
+    text-align: center;
+    color: rgb(225, 217, 243);/* Change this to the color you want */
+
+    width: 100%;
+}
+.input label.Mui-focused {
+    color: rgb(44, 15, 142);/* Change this to the color you want */
+    font-weight: bold;
+    text-align: start;
+
+    font-family: lexend !important;
 }
