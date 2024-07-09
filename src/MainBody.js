@@ -24,7 +24,6 @@ const Div = styled('div')(({ theme }) => ({
 
 
 function MainBody({ score, setScore, points, setPoints }) {
-  // Trivia API
   const [bestScore, setBestScore] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState("")
   const [category, setCategory] = useState("")
@@ -32,29 +31,39 @@ function MainBody({ score, setScore, points, setPoints }) {
   //9 --> general knowledge
 
 
-  // Movie API
+
   let generateRandomMovie = () => {
     let num = Math.floor(Math.random() * 300);
     let movie = movies.popular_movies[num].movie_name;
     return movie;
-  };
+  };  //generates random number and gets the movie from JSON file of movies
+
   const [poster, setPoster] = useState("");
   const [currentActors, setCurrentActors] = useState([]);
   const [chosenActor, setChosenActor] = useState("");
   const apiKey = "493435e4"
-
+   
   function checkActor(currentActors, chosenActor) {
-    for (let i = 0; i < currentActors.length; i++) {
-      if (currentActors[i].toLowerCase() === chosenActor.toLowerCase()) {
-        return true;
-      }
-    }
-    return false;
-  }
+    const match = currentActors.filter((actor)=>
+      actor.toLowerCase()===chosenActor.toLowerCase()
+    )
+    return match.length>0
+
+    // for (let i = 0; i < currentActors.length; i++) {
+    //   if (currentActors[i].toLowerCase() === chosenActor.toLowerCase()) {
+    //     return true;
+    //   }
+    // }
+    // return false;
+  }  //checks if the actual actor matches with the actor chosen by the user
+
 
   const handleInputChange = (event) => {
     setChosenActor(event.target.value);
-  }
+  }  //Sets the actor chosen by the user, gets an input from input field
+
+
+  // Movie API fetching
 
   function fetchMovie() {
     const requestOptions = {
@@ -72,6 +81,9 @@ function MainBody({ score, setScore, points, setPoints }) {
         console.error(error)
       });
   }
+
+
+  //Random Question API fetching
 
   function fetchRandomQuestion() {
     const requestOptions = {
@@ -91,7 +103,7 @@ function MainBody({ score, setScore, points, setPoints }) {
     }
   }
 
-
+  //buttons to choose from "Enter", "Skip", "Hint"
   function handleEnterPress() {
     if (checkActor(currentActors, chosenActor)) {
       alert("Correct!");
@@ -113,7 +125,6 @@ function MainBody({ score, setScore, points, setPoints }) {
       setPoints(0);
       setBestScore(0);
     }
-
   }
 
   function skipQuestion() {
@@ -143,7 +154,7 @@ function MainBody({ score, setScore, points, setPoints }) {
     }
   }
 
-
+  //for the separate trivia quiz, gets the true false answer from the user and checks if it's correct
   const handleAnswer = (answer) => {
     if (answer === correctAnswer) {
       alert("Correct! +200 points");
@@ -169,8 +180,12 @@ function MainBody({ score, setScore, points, setPoints }) {
       fetchRandomQuestion();
     }
   }, [category]);
+
+
+  //copied from Material UI documentation
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -184,7 +199,7 @@ function MainBody({ score, setScore, points, setPoints }) {
   }
 
 
-  if (bestScore % 2 === 0 && bestScore !== 0) {
+  if (bestScore % 2 === 0 && bestScore !== 0) { //if you score 2 questions correct in a row you get to play a trivia game
     return (
       <div className="MainBody">
         <Div className="question-component">
