@@ -1,69 +1,57 @@
-import React from 'react'
-import { useState, useEffect } from 'react';
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
-import "./MainBody.css"
-import TextField from '@mui/material/TextField';
+import React from "react";
+import { useState, useEffect } from "react";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
+import "./MainBody.css";
+import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import movies from "./movies.json"
+import movies from "./movies.json";
 import Typography from "@mui/material/Typography";
-import { styled } from '@mui/material/styles';
-import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import { styled } from "@mui/material/styles";
+import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
+import SkipNextIcon from "@mui/icons-material/SkipNext";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
-const Div = styled('div')(({ theme }) => ({
+const Div = styled("div")(({ theme }) => ({
   ...theme.typography.button,
   backgroundColor: theme.palette.background.paper,
   padding: theme.spacing(1),
 }));
 
-
-
 function MainBody({ score, setScore, points, setPoints }) {
   const [bestScore, setBestScore] = useState(0);
-  const [currentQuestion, setCurrentQuestion] = useState("")
-  const [category, setCategory] = useState("")
+  const [currentQuestion, setCurrentQuestion] = useState("");
+  const [category, setCategory] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
-  //9 --> general knowledge
-
-
+  const [categoryLocked, setCategoryLocked] = useState(false);
 
   let generateRandomMovie = () => {
     let num = Math.floor(Math.random() * 300);
     let movie = movies.popular_movies[num].movie_name;
     return movie;
-  };  //generates random number and gets the movie from JSON file of movies
+  };
 
   const [poster, setPoster] = useState("");
   const [currentActors, setCurrentActors] = useState([]);
   const [chosenActor, setChosenActor] = useState("");
-  const apiKey = "493435e4"
-   
+  const apiKey = process.env.REACT_APP_API_KEY;
+  console.log(apiKey);
+
   function checkActor(currentActors, chosenActor) {
-    const match = currentActors.filter((actor)=>
-      actor.toLowerCase()===chosenActor.toLowerCase()
-    )
-    return match.length>0
-
-    // for (let i = 0; i < currentActors.length; i++) {
-    //   if (currentActors[i].toLowerCase() === chosenActor.toLowerCase()) {
-    //     return true;
-    //   }
-    // }
-    // return false;
-  }  //checks if the actual actor matches with the actor chosen by the user
-
+    const match = currentActors.filter(
+      (actor) => actor.toLowerCase() === chosenActor.toLowerCase()
+    );
+    return match.length > 0;
+  }
 
   const handleInputChange = (event) => {
     setChosenActor(event.target.value);
-  }  //Sets the actor chosen by the user, gets an input from input field
+  };
 
-
-  // Movie API fetching
+  let num = 0;
 
   function fetchMovie() {
     const requestOptions = {
@@ -71,39 +59,51 @@ function MainBody({ score, setScore, points, setPoints }) {
     };
 
     let randomMovie = generateRandomMovie();
-    fetch(`http://www.omdbapi.com/?t=${randomMovie}&apikey=${apiKey}`, requestOptions)
+    fetch(
+      `https://www.omdbapi.com/?t=${randomMovie}&apikey=${apiKey}`,
+      requestOptions
+    )
       .then((response) => response.json())
       .then((result) => {
-        setPoster(result?.Poster)
-        setCurrentActors(result?.Actors?.split(',').map(name => name.trim()));
+        num = 0;
+        setPoster(result?.Poster);
+        setCurrentActors(result?.Actors?.split(",").map((name) => name.trim()));
       })
       .catch((error) => {
-        console.error(error)
+        num++;
+
+        console.error(error);
+        if (num <= 3) {
+          fetchMovie();
+        } else {
+          alert("Error");
+          num = 0;
+        }
       });
   }
 
-
-  //Random Question API fetching
-
-  function fetchRandomQuestion() {
+  function fetchRandomQuestion(category, setCorrectAnswer, setCurrentQuestion) {
     const requestOptions = {
       method: "GET",
     };
-    if (category !== "") {
-      fetch(`https://opentdb.com/api.php?amount=1&category=${category}&type=boolean`, requestOptions)
-        .then((response) => response.json())
-        .then((result) => {
-          console.log(result);
-          setCorrectAnswer(result.results[0].correct_answer);
-          setCurrentQuestion(result.results[0].question);
-        })
-        .catch((error) => {
-          console.error(error)
-        });
-    }
+
+    fetch(
+      `https://opentdb.com/api.php?amount=1&category=${category}&type=boolean`,
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then((result) => {
+        const parser = new DOMParser();
+        const decodedQuestion = parser.parseFromString(
+          result.results[0].question,
+          "text/html"
+        ).body.textContent;
+
+        setCorrectAnswer(result.results[0].correct_answer);
+        setCurrentQuestion(decodedQuestion);
+      });
   }
 
-  //buttons to choose from "Enter", "Skip", "Hint"
   function handleEnterPress() {
     if (checkActor(currentActors, chosenActor)) {
       alert("Correct!");
@@ -115,8 +115,7 @@ function MainBody({ score, setScore, points, setPoints }) {
       if (!poster) {
         fetchMovie();
       }
-    }
-    else {
+    } else {
       alert("Incorrect! Game Over!");
       setPoster("");
       setCurrentActors([]);
@@ -129,60 +128,56 @@ function MainBody({ score, setScore, points, setPoints }) {
 
   function skipQuestion() {
     if (points >= 100) {
-      setPoints(points - 100)
+      setPoints(points - 100);
       setChosenActor("");
       setPoster("");
       fetchMovie();
       if (!poster) {
         fetchMovie();
       }
-    }
-    else {
-      alert("You have to have at least 100 points! Can't skip :( \n")
+    } else {
+      alert("You have to have at least 100 points! Can't skip :( \n");
     }
   }
 
   function getHint() {
     if (points >= 50) {
-      setPoints(points - 50)
-      console.log(currentActors)
-      let currMovieActor = currentActors[0].split(' ')[0]
-      alert(`The first name of the actor is: ${currMovieActor} \n -50 points`)
-    }
-    else {
-      alert("You have to have at least 50 points! No hints :(")
+      setPoints(points - 50);
+      console.log(currentActors);
+      let currMovieActor = currentActors[0].split(" ")[0];
+      alert(`The first name of the actor is: ${currMovieActor} \n -50 points`);
+    } else {
+      alert("You have to have at least 50 points! No hints :(");
     }
   }
 
-  //for the separate trivia quiz, gets the true false answer from the user and checks if it's correct
   const handleAnswer = (answer) => {
     if (answer === correctAnswer) {
       alert("Correct! +200 points");
-      setPoints(points + 200)
+      setPoints(points + 200);
+    } else {
+      alert("Incorrect! No points added.");
     }
-    else {
-      alert("Incorrect! No points added.")
-    }
+
     setCategory("");
     setCorrectAnswer("");
     setCurrentQuestion("");
-    setBestScore(0)
-  }
+    setBestScore(0);
+    setCategoryLocked(false);
+  };
 
   useEffect(() => {
     if (!poster) {
       fetchMovie();
     }
-  })
+  });
 
   useEffect(() => {
     if (category !== "") {
-      fetchRandomQuestion();
+      fetchRandomQuestion(category, setCorrectAnswer, setCurrentQuestion);
     }
   }, [category]);
 
-
-  //copied from Material UI documentation
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -194,23 +189,30 @@ function MainBody({ score, setScore, points, setPoints }) {
   };
 
   const handleCategoryChange = (selectedCategory) => {
-    setAnchorEl(null);
-    setCategory(selectedCategory);
-  }
+    if (!categoryLocked) {
+      setAnchorEl(null);
+      setCategory(selectedCategory);
+      setCategoryLocked(true);
+    }
+  };
 
-
-  if (bestScore % 2 === 0 && bestScore !== 0) { //if you score 2 questions correct in a row you get to play a trivia game
+  if (bestScore % 2 === 0 && bestScore !== 0) {
     return (
       <div className="MainBody">
         <Div className="question-component">
-          <Typography className = "win-text">(You answered 2 questions correct in a row)</Typography>
-          <Typography className = "text choose-category">Choose the category of the question</Typography>
+          <Typography className="win-text">
+            (You answered 2 questions correct in a row)
+          </Typography>
+          <Typography className="text choose-category">
+            Choose the category of the question
+          </Typography>
 
-          <Button className = "category-button"
+          <Button
+            className="category-button"
             id="basic-button"
-            aria-controls={open ? 'basic-menu' : undefined}
+            aria-controls={open ? "basic-menu" : undefined}
             aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
+            aria-expanded={open ? "true" : undefined}
             onClick={handleClick}
           >
             Choose Category
@@ -221,44 +223,89 @@ function MainBody({ score, setScore, points, setPoints }) {
             open={open}
             onClose={handleClose}
             MenuListProps={{
-              'aria-labelledby': 'basic-button',
+              "aria-labelledby": "basic-button",
             }}
           >
-            <MenuItem onClick={() => handleCategoryChange("9")}>General Knowledge</MenuItem>
-            <MenuItem onClick={() => handleCategoryChange("10")}>Books</MenuItem>
-            <MenuItem onClick={() => handleCategoryChange("11")}>Movies</MenuItem>
-            <MenuItem onClick={() => handleCategoryChange("12")}>Music</MenuItem>
-            <MenuItem onClick={() => handleCategoryChange("15")}>Video Games</MenuItem>
-            <MenuItem onClick={() => handleCategoryChange("22")}>Geography</MenuItem>
+            <MenuItem onClick={() => handleCategoryChange("9")}>
+              General Knowledge
+            </MenuItem>
+            <MenuItem onClick={() => handleCategoryChange("10")}>
+              Books
+            </MenuItem>
+            <MenuItem onClick={() => handleCategoryChange("11")}>
+              Movies
+            </MenuItem>
+            <MenuItem onClick={() => handleCategoryChange("12")}>
+              Music
+            </MenuItem>
+            <MenuItem onClick={() => handleCategoryChange("15")}>
+              Video Games
+            </MenuItem>
+            <MenuItem onClick={() => handleCategoryChange("22")}>
+              Geography
+            </MenuItem>
           </Menu>
 
-          <Typography className = "question">{currentQuestion}</Typography>
-          <Div className='answer-buttons'>
-            <Button className = "true-false" variant="outlined" onClick={() => handleAnswer("True")}>True</Button>
-            <Button className = "true-false" variant="outlined" onClick={() => handleAnswer("False")}>False</Button>
+          <Typography className="question">{currentQuestion}</Typography>
+          <Div className="answer-buttons">
+            <Button
+              className="true-false"
+              variant="outlined"
+              onClick={() => handleAnswer("True")}
+            >
+              True
+            </Button>
+            <Button
+              className="true-false"
+              variant="outlined"
+              onClick={() => handleAnswer("False")}
+            >
+              False
+            </Button>
           </Div>
-          
         </Div>
       </div>
     );
   }
 
   return (
-    <div className='MainBody'>
-      <Div className='poster-container'>
+    <div className="MainBody">
+      <Div className="poster-container">
         <img src={poster} alt=""></img>
       </Div>
-      <Div className='play-portion'>
-        <Typography className="text">Write down the actor's name below</Typography>
-        <TextField className="input" value={chosenActor} onChange={handleInputChange}
-          id="movieSearch" label="enter the name" variant="outlined" />
-        <Button className='enter button' onClick={handleEnterPress} variant="outlined">enter</Button>
-        <Button className="skip button" variant="outlined" onClick={skipQuestion}>Skip<SkipNextIcon /></Button>
-        <Button className="hint button" variant="outlined" onClick={getHint}>Hint<TipsAndUpdatesIcon />
+      <Div className="play-portion">
+        <Typography className="text">
+          Write down the actor's name below
+        </Typography>
+        <TextField
+          className="input"
+          value={chosenActor}
+          onChange={handleInputChange}
+          id="movieSearch"
+          label="enter the name"
+          variant="outlined"
+        />
+        <Button
+          className="enter button"
+          onClick={handleEnterPress}
+          variant="outlined"
+        >
+          enter
         </Button>
-
+        <Button
+          className="skip button"
+          variant="outlined"
+          onClick={skipQuestion}
+        >
+          Skip
+          <SkipNextIcon />
+        </Button>
+        <Button className="hint button" variant="outlined" onClick={getHint}>
+          Hint
+          <TipsAndUpdatesIcon />
+        </Button>
       </Div>
     </div>
-  )
+  );
 }
-export default MainBody
+export default MainBody;
